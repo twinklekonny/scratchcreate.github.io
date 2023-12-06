@@ -1,0 +1,69 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Password Checker</title>
+</head>
+<body>
+  <h1>Password Checker</h1>
+  
+  <div id="passwordForm">
+    <input type="text" id="fiveDigit" placeholder="Enter 5 digits"><br><br>
+    <input type="text" id="twoDigit" placeholder="Enter 2 digits"><br><br>
+    <button onclick="checkPassword()">Check Password</button>
+  </div>
+
+  <div id="chatRoom" style="display: none;">
+    <ul id="messages"></ul>
+    <input id="message_input" autocomplete="off"><button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    function checkPassword() {
+      const fiveDigit = document.getElementById('fiveDigit').value.split(',').map(num => parseInt(num.trim()));
+      const twoDigit = document.getElementById('twoDigit').value.split(',').map(num => parseInt(num.trim()));
+
+      fetch('/check_password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fiveDigit, twoDigit })
+      })
+      .then(response => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          throw new Error('Password check failed.');
+        }
+      })
+      .then(data => {
+        alert(data.message);
+        if (data.message === "Correct password!") {
+          // パスワードが正しい場合の処理
+        document.getElementById('passwordForm').style.display = 'none'; // パスワード入力フォームを非表示にする
+        document.getElementById('chatRoom').style.display = 'block'; // チャットルームを表示する
+
+        // ここでリダイレクトもしくはページ遷移のコードを追加する
+        window.location.href = '/chat'; // 例えば、/chatにリダイレクトする場合
+        }
+      })
+      .catch(error => {
+        alert('There was an error checking the password: ' + error.message);
+      });
+    }
+
+    function sendMessage() {
+      var message = document.getElementById('message_input').value;
+      // チャットメッセージを送信するコードをここに追加する
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+
